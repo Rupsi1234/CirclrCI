@@ -28,7 +28,7 @@ jobs:
       - checkout
       - run:
           name: Install Packages
-          command: cd engageAutomation; npm install
+          command: npm install
       - run:
           defaults write com.apple.Safari AllowRemoteAutomation 1
       - run:
@@ -39,15 +39,15 @@ jobs:
           command: npm test -- --reportdir=$(date +%d-%m-%Y-%H-%M-%S) --appType=$APP_TYPE --testEnv=$TEST_ENV --testExecFile=AcceptanceNew.json  --windowWidth=1600 --windowHeight=900 --browserCapability=desktop-safari-1920 || true
       - aws-s3/sync:
           arguments: |
-          from: './engageAutomation/output/reports/'
+          from: './output/reports/'
           to: 's3://engage-qa-testreports/$APP_TYPE/$TEST_ENV'  
       - run:
           name: Install Packages of Mailer
-          command: cd engageAutomation; npm install yargs fs nodemailer;
+          command: npm install yargs fs nodemailer;
       - run:
           name: After Job - Send mail
           command: |
-            cd engageAutomation/core/utils; node mailer.js --appType=$APP_TYPE --testEnv=$TEST_ENV --projectName=$CIRCLE_PROJECT_REPONAME --branchName=$CIRCLE_BRANCH --buildNumber=$CIRCLE_BUILD_NUM --mailingList=$MAILINGLIST --emailId=$emailId --emailPwd=$emailPwd --jobResult=$CIRCLE_BUILD_URL --triggerSource=$triggerSource
+            cd core/utils; node mailer.js --appType=$APP_TYPE --testEnv=$TEST_ENV --projectName=$CIRCLE_PROJECT_REPONAME --branchName=$CIRCLE_BRANCH --buildNumber=$CIRCLE_BUILD_NUM --mailingList=$MAILINGLIST --emailId=$emailId --emailPwd=$emailPwd --jobResult=$CIRCLE_BUILD_URL --triggerSource=$triggerSource
 workflows:
   engage:
     jobs:
