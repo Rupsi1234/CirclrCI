@@ -9,29 +9,25 @@ jobs:
   AcceptanceTestWindows:
     executor: win/default
     steps:
+     node/install:
+        node-version: "16.13.2"
+         - run:
+          name: Install node@16
+          command: nvm install v16.13.2; nvm alias default 16.13.2
+ - run:
+          command: node --version
+          name: Check node version
+  
       - run:
           name: Install Chrome
           command: |
             $Path = $env:TEMP; $Installer = "chrome_installer.exe"; Invoke-WebRequest "http://dl.google.com/chrome/install/375.126/chrome_installer.exe" -OutFile $Path\$Installer; Start-Process -FilePath $Path\$Installer -Args "/silent /install" -Verb RunAs -Wait; Remove-Item $Path\$Installer  
       - checkout
-      - run:
-          name: Install Packages
-          command: cd engageAutomation; npm install
+
       - run:
           name: Run Tests_engage (Windows + Integration)
-          command: cd engageAutomation; npm test -- --reportdir=$(Get-Date -Format "dd-MM-yyyy-HH-mm-ss") --appType=$env:APP_TYPE --testEnv=$env:TEST_ENV --testExecFile=AcceptanceNew.json  --windowWidth=1600 --windowHeight=900 --browserCapability=desktop-chrome-1920; if (-not $?) {1 > 0}
-      - deploy:
-          name: S3 Sync
-          command:
-            aws s3 sync ./engageAutomation/output/reports/ s3://engage-qa-testreports/$env:APP_TYPE/$env:TEST_ENV
-      - run:
-          name: Install Packages of Mailer
-          command: cd engageAutomation; npm install yargs fs nodemailer;
-      - run:
-          name: After Job - Send mail
-          command: |
-            cd engageAutomation/core/utils; node mailer.js --appType=$env:APP_TYPE --testEnv=$env:TEST_ENV --projectName=$env:CIRCLE_PROJECT_REPONAME --branchName=$env:CIRCLE_BRANCH --buildNumber=$env:CIRCLE_BUILD_NUM --mailingList=$env:MAILINGLIST --emailId=$env:emailId --emailPwd=$env:emailPwd --jobResult=$env:CIRCLE_BUILD_URL --triggerSource=$env:triggerSource
-# Invoke jobs via workflows..
+          command: npm test -- --reportdir=$(Get-Date -Format "dd-MM-yyyy-HH-mm-ss") --appType=$env:APP_TYPE --testEnv=$env:TEST_ENV --testExecFile=AcceptanceNew.json  --windowWidth=1600 --windowHeight=900 --browserCapability=desktop-chrome-1920; if (-not $?) {1 > 0}
+    # Invoke jobs via workflows..
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
 workflows:
   engage:
