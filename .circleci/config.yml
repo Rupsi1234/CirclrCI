@@ -36,7 +36,7 @@ jobs:
       - macos/add-safari-permissions
       - run:
           name: Run Tests_engage (MacOS + Safari Branch)
-          command: npm test -- --reportdir=$(date +%d-%m-%Y-%H-%M-%S) --appType=$APP_TYPE --testEnv=$TEST_ENV --testExecFile=AcceptanceNew.json  --windowWidth=1600 --windowHeight=900 --browserCapability=desktop-safari-1920 || true
+          command: npm test -- --reportdir=$(date +%d-%m-%Y-%H-%M-%S) --appType=$APP_TYPE --testEnv=$TEST_ENV --testExecFile=AcceptanceNew.json  --windowWidth=1600 --windowHeight=900 --browserCapability=desktop-chrome-1920 || true
       - aws-s3/sync:
           arguments: |
           from: './output/reports/'
