@@ -26,6 +26,19 @@ jobs:
       - run:
           name: Run Tests_engage (Windows + Integration)
           command: cd engageAutomation; npm test -- --reportdir=$(Get-Date -Format "dd-MM-yyyy-HH-mm-ss") --appType=$env:APP_TYPE --testEnv=$env:TEST_ENV --testExecFile=AcceptanceNew.json  --browserCapability=desktop-chrome-1920; if (-not $?) {1 > 0}
+   - aws-s3/sync:
+          arguments: |
+          from: './engageAutomation/output/reports/'
+          to: 's3://engage-qa-testreports/$APP_TYPE/$TEST_ENV'  
+      - run:
+          name: Install Packages of Mailer
+          command: cd engageAutomation; npm install yargs fs nodemailer;
+      - run:
+          name: After Job - Send mail
+          command: |
+            cd engageAutomation/core/utils; node mailer.js --appType=$APP_TYPE --testEnv=$TEST_ENV --projectName=$CIRCLE_PROJECT_REPONAME --branchName=$CIRCLE_BRANCH --buildNumber=$CIRCLE_BUILD_NUM --mailingList=$MAILINGLIST --emailId=$emailId --emailPwd=$emailPwd --jobResult=$CIRCLE_BUILD_URL --triggerSource=$triggerSource
+
+  
      # Invoke jobs via workflows..
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows.
 workflows:
