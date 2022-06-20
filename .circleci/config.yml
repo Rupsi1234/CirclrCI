@@ -26,7 +26,7 @@ jobs:
       - run:
           name: Run Tests_engage (Windows + Integration)
           command: cd engageAutomation; npm test -- --reportdir=$(Get-Date -Format "dd-MM-yyyy-HH-mm-ss") --appType=$env:APP_TYPE --testEnv=$env:TEST_ENV --testExecFile=AcceptanceNew.json  --browserCapability=desktop-chrome-1920; if (-not $?) {1 > 0}
-   - aws-s3/sync:
+      - aws-s3/sync:
           arguments: |
           from: './engageAutomation/output/reports/'
           to: 's3://engage-qa-testreports/$APP_TYPE/$TEST_ENV'  
